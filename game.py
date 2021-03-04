@@ -42,7 +42,7 @@ def get_word():
 
 def get_guess():
     guess = input('Enter Guess: ').upper().strip()
-    while len(guess)!=4 and guess not in dictionary[word[0]]:
+    while len(guess)!=4 and guess not in dictionary[guess[0]]:
         guess = input('Enter Guess: ').upper().strip()
     return guess
 
