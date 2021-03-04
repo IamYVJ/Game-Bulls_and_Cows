@@ -5,9 +5,6 @@ from telegram import ForceReply, ReplyKeyboardMarkup, KeyboardButton, ReplyKeybo
 import logging
 import string
 import random
-# import ujson
-# from emoji import emojize
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
 from dotenv import load_dotenv
 import json
@@ -100,6 +97,16 @@ class User:
         self.attempts = 0
         self.word = ''
     
+    def get_gameinfo(self, update, context):
+        update.message.reply_text(f'Current Attempts: {self.attempts}', quote=True)
+
+    def endgame(self, update, context):
+        update.message.reply_text(f'You ended the game with {self.attempts} attempts!', quote=True)
+        update.message.reply_text(f'Word: {self.word}')
+        self.in_game = False
+        self.attempts = 0
+        self.word = ''
+
     def start_game(self):
         self.in_game = True
         self.word = get_random_word()
@@ -110,17 +117,21 @@ class User:
         if self.in_game:
             guess = update.message.text.strip().upper()
             if len(guess)!=4 or guess not in dictionary[guess[0]]:
-                update.message.reply_text('Invalid Guess. Try Again.')
+                print(f'{update.message.from_user.name} guessed {guess} | INVALID')
+                update.message.reply_text('Invalid Guess. Try Again.', quote=True)
             else:
                 bulls, cows = check(self.word, guess)
                 self.attempts+=1
                 if bulls==4:
-                    update.message.reply_text(f'You guessed the word in {self.attempts} attempts!')
+                    print(f'{update.message.from_user.name} guessed {guess} in {self.attempts} attempts!')
+                    update.message.reply_text(f'You guessed the word in {self.attempts} attempts!', quote=True)
                     self.in_game = False
                     self.attempts = 0
                     self.word = ''
                 else:
-                    update.message.reply_text(f'{bulls} Bulls and {cows} Cows')
+                    # update.message.reply_text(f'{bulls} Bulls and {cows} Cows')
+                    print(f'{update.message.from_user.name} guessed {guess} | {bulls} Bulls and {cows} Cows')
+                    update.message.reply_text(f'{bulls} Bulls and {cows} Cows', quote=True)
         else:
             update.message.reply_text('Invalid command. You\'re not in a game.')
 
@@ -143,21 +154,38 @@ def start(update, context):
     update.message.reply_text("Welcome to Bulls and Cows. Use /help to get a list of available commands.")
 
 def newgame(update, context):
-    print(update.message.from_user.name + ' started a new game.')
-    if(len(active_games) > 2):
-        update.message.reply_text('Server limit reached. Try again later.')
+    if(update.message.from_user.id not in user_game) or user_game[update.message.from_user.id].in_game==False:
+        print(update.message.from_user.name + ' started a new game.')
+        if(len(active_games) > 2):
+            update.message.reply_text('Server limit reached. Try again later.')
+        else:
+            gameid = ''.join(random.choices(string.ascii_uppercase, k=5))
+            newuser = User(update.message.from_user, update.effective_chat, gameid)
+            user_game[update.message.from_user.id] = newuser
+            newuser.start_game()
     else:
-        gameid = ''.join(random.choices(string.ascii_uppercase, k=5))
-        newuser = User(update.message.from_user, update.effective_chat, gameid)
-        user_game[update.message.from_user.id] = newuser
-        newuser.start_game()
+        update.message.reply_text('You\'re already in a game.', quote=True)
 
 def respond(update, context):
     if(update.message.from_user.id in user_game):
         user = user_game[update.message.from_user.id]
         user.respond(update, context)
     else:
-        update.message.reply_text('Invalid option. Please create or join a game. Use /help to see a list of commands.')
+        update.message.reply_text('Invalid option. Please create or join a game. Use /help to see a list of commands.', quote=True)
+
+def gameinfo(update, context):
+    if(update.message.from_user.id in user_game) and (user_game[update.message.from_user.id].in_game==True):
+        user = user_game[update.message.from_user.id]
+        user.get_gameinfo(update, context)
+    else:
+        update.message.reply_text('No active game.', quote=True)
+
+def endgame(update, context):
+    if(update.message.from_user.id in user_game) and (user_game[update.message.from_user.id].in_game==True):
+        user = user_game[update.message.from_user.id]
+        user.endgame(update, context)
+    else:
+        update.message.reply_text('No active game.', quote=True)
 
 def error(update, context):
     """Log Errors caused by Updates."""
@@ -171,8 +199,8 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('newgame', newgame))
     updater.dispatcher.add_handler(CommandHandler('help', helper))
     updater.dispatcher.add_handler(CommandHandler('reset', reset))
-    # updater.dispatcher.add_handler(CommandHandler('gameinfo', gameinfo))
-    # updater.dispatcher.add_handler(CommandHandler('endgame', endgame))
+    updater.dispatcher.add_handler(CommandHandler('gameinfo', gameinfo))
+    updater.dispatcher.add_handler(CommandHandler('endgame', endgame))
     updater.dispatcher.add_handler(CommandHandler('about', about))
     updater.dispatcher.add_handler(MessageHandler(Filters.text & (~Filters.command), respond))
     updater.dispatcher.add_error_handler(error)
