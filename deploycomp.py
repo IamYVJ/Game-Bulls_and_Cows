@@ -25,6 +25,8 @@ bot = telegram.Bot(BOT_TOKEN)
 
 dictionary = {}
 
+proper_dictionary = {}
+
 if (MODE == "dev"):
     def run(updater):
         updater.start_polling()
@@ -73,7 +75,7 @@ def check(word, guess):
 
 def get_random_word():
     alpha = chr(ord('A') + randint(0, 25))
-    word = choice(dictionary[alpha])
+    word = choice(proper_dictionary[alpha])
     return word
 
 def get_dictionary():
@@ -83,6 +85,14 @@ def get_dictionary():
     global dictionary
     with open(dictionary_path) as f:
         dictionary = json.loads(f.read())
+
+def get_proper_dictionary():
+    dictionary_path = 'properwords.json'
+    if getattr(sys, 'frozen', False):
+        dictionary_path = os.path.join(sys._MEIPASS, 'properwords.json')
+    global properwords_dictionary
+    with open(dictionary_path) as f:
+        properwords_dictionary = json.loads(f.read())
 
 class User:
     def __init__(self, userObj, chatObj, gameid):
@@ -193,7 +203,7 @@ def error(update, context):
 
 def main():
     get_dictionary()
-
+    get_proper_dictionary()
     updater = Updater(BOT_TOKEN, use_context=True)
     updater.dispatcher.add_handler(CommandHandler('start', start))
     updater.dispatcher.add_handler(CommandHandler('newgame', newgame))
