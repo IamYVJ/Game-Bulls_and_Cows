@@ -90,9 +90,9 @@ def get_proper_dictionary():
     dictionary_path = 'properwords.json'
     if getattr(sys, 'frozen', False):
         dictionary_path = os.path.join(sys._MEIPASS, 'properwords.json')
-    global properwords_dictionary
+    global proper_dictionary
     with open(dictionary_path) as f:
-        properwords_dictionary = json.loads(f.read())
+        proper_dictionary = json.loads(f.read())
 
 class User:
     def __init__(self, userObj, chatObj, gameid):
