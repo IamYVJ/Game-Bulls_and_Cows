@@ -99,14 +99,14 @@ def get_proper_dictionary():
 
 def update_data(user_id, won, attempts):
     global data
-    data[user_id]['Number of Games'] += 1
-    data[user_id]['No of Attempts'] += attempts
+    data[user_id]["Number of Games"] += 1
+    data[user_id]["Number of Attempts"] += attempts
     if won:
-        data[user_id]['Number of Wins'] += 1
-        data[user_id]['Number of Win Attempts'] += attempts
+        data[user_id]["Number of Wins"] += 1
+        data[user_id]["Number of Win Attempts"] += attempts
     else:
-        data[user_id]['Number of Losses'] += 1
-        data[user_id]['Number of Loss Attempts'] += attempts
+        data[user_id]["Number of Losses"] += 1
+        data[user_id]["Number of Loss Attempts"] += attempts
     write_file(data)
 
 class User:
@@ -166,16 +166,16 @@ def check_user(userObj):
     global data
     if userObj.id not in data:
         data[userObj.id] = {
-        'First Name' : userObj.first_name,
-        'Full Name' : userObj.full_name,
-        'ID' : userObj.id,
-        'Username' : userObj.username,
-        'Number of Games' : 0,
-        'Number of Wins' : 0,
-        'Number of Losses' : 0,
-        'No of Attempts' : 0,
-        'No of Win Attempts' : 0,
-        'No of Loss Attempts' : 0
+        "First Name" : userObj.first_name,
+        "Full Name" : userObj.full_name,
+        "ID" : userObj.id,
+        "Username" : userObj.username,
+        "Number of Games" : 0,
+        "Number of Wins" : 0,
+        "Number of Losses" : 0,
+        "Number of Attempts" : 0,
+        "Number of Win Attempts" : 0,
+        "Number of Loss Attempts" : 0
         }
 
 def reset(update, context):
@@ -229,9 +229,9 @@ def userstats_message(user_id):
     msg += 'Number of Wins: ' + str(data[user_id]['Number of Wins']) + '\n'
     msg += 'Number of Losses: ' + str(data[user_id]['Number of Losses']) + '\n'
     msg += 'Win Percentage: ' + str(round((data[user_id]['Number of Wins']/data[user_id]['Number of Games'])*100, 2)) + '\n'
-    msg += 'No of Attempts: ' + str(data[user_id]['No of Attempts']) + '\n'
-    msg += 'No of Win Attempts: ' + str(data[user_id]['No of Win Attempts']) + '\n'
-    msg += 'No of Loss Attempts: ' + str(data[user_id]['No of Loss Attempts']) + '\n'
+    msg += 'Number of Attempts: ' + str(data[user_id]['Number of Attempts']) + '\n'
+    msg += 'Number of Win Attempts: ' + str(data[user_id]['Number of Win Attempts']) + '\n'
+    msg += 'Number of Loss Attempts: ' + str(data[user_id]['Number of Loss Attempts']) + '\n'
     return msg
 
 def userstats(update, context):
@@ -253,11 +253,11 @@ def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 def write_file(data):
-    # lock = FileLock("data.json.lock")
-    # with lock:
-    #     open("data.json", "w").write(json.dumps(data, indent=4))    
-    with open('data.json', 'w') as f:
-        f.write(json.dumps(data, indent=4))
+    lock = FileLock("data.json.lock")
+    with lock:
+        open("data.json", "w").write(json.dumps(data, indent=4))    
+    # with open('data.json', 'w') as f:
+    #     f.write(json.dumps(data, indent=4))
 
 def make_file():
     with open('data.json', 'w') as f:
