@@ -151,6 +151,7 @@ class User:
                 if bulls==4:
                     print(f'{update.message.from_user.name} guessed {guess} in {self.attempts} attempts!')
                     update.message.reply_text(f'You guessed the word in {self.attempts} attempts!', quote=True)
+                    update_data(update.message.from_user.id, True, self.attempts)
                     self.in_game = False
                     self.attempts = 0
                     self.word = ''
