@@ -165,10 +165,10 @@ def check_user(userObj):
     global data
     if userObj.id not in data:
         data[userObj.id] = {
-        'First Name' : userObj.first_name
-        'Full Name' : userObj.full_name
-        'ID' : userObj.id
-        'Username' : userObj.username
+        'First Name' : userObj.first_name,
+        'Full Name' : userObj.full_name,
+        'ID' : userObj.id,
+        'Username' : userObj.username,
         'Number of Games' : 0,
         'Number of Wins' : 0,
         'Number of Losses' : 0,
