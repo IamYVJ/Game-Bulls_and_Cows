@@ -189,7 +189,7 @@ def about(update, context):
     update.message.reply_text('Court Piece Bot made by Yashvardhan Jain.\nContact @IamYVJ for reporting bugs, feedback and suggestions.')
 
 def helper(update, context):
-    update.message.reply_text("Use /newgame to create a game.\nUse /join <gameid> to join a game.\nUse /gameinfo to get details of current game. \nUse /endgame to end current game\nUse /about to get info about bot.")
+    update.message.reply_text("Use /newgame to create a game.\nUse /join <gameid> to join a game.\nUse /gameinfo to get details of current game. \nUse /endgame to end current game\nUse /userstats to get your statistics\nUse /about to get info about bot.")
 
 def start(update, context):
     update.message.reply_text("Welcome to Bulls and Cows. Use /help to get a list of available commands.")
@@ -221,6 +221,24 @@ def gameinfo(update, context):
         user.get_gameinfo(update, context)
     else:
         update.message.reply_text('No active game.', quote=True)
+
+def userstats_message(user_id):
+    msg = ''
+    msg += 'Number of Games: ' + data[user_id]['Number of Games'] + '\n'
+    msg += 'Number of Wins: ' + data[user_id]['Number of Wins'] + '\n'
+    msg += 'Number of Losses: ' + data[user_id]['Number of Losses'] + '\n'
+    msg += 'Win Percentage: ' + str(round((data[user_id]['Number of Wins']/data[user_id]['Number of Games'])*100, 2)) + '\n'
+    msg += 'No of Attempts: ' + data[user_id]['No of Attempts'] + '\n'
+    msg += 'No of Win Attempts: ' + data[user_id]['No of Win Attempts'] + '\n'
+    msg += 'No of Loss Attempts: ' + data[user_id]['No of Loss Attempts'] + '\n'
+    return msg
+
+def userstats(update, context):
+    if(update.message.from_user.id in data):
+        msg = userstats_message(update.message.from_user.id)
+        update.message.reply_text(msg, quote=True)
+    else:
+        update.message.reply_text('No Stats Available', quote=True)
 
 def endgame(update, context):
     if(update.message.from_user.id in user_game) and (user_game[update.message.from_user.id].in_game==True):
@@ -262,6 +280,7 @@ def main():
     updater.dispatcher.add_handler(CommandHandler('newgame', newgame))
     updater.dispatcher.add_handler(CommandHandler('help', helper))
     updater.dispatcher.add_handler(CommandHandler('reset', reset))
+    updater.dispatcher.add_handler(CommandHandler('userstats', userstats))
     updater.dispatcher.add_handler(CommandHandler('gameinfo', gameinfo))
     updater.dispatcher.add_handler(CommandHandler('endgame', endgame))
     updater.dispatcher.add_handler(CommandHandler('about', about))
