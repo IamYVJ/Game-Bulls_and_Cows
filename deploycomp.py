@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 import json
 from random import randint, choice
 import os, sys
+from filelock import Timeout, FileLock
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -18,6 +19,8 @@ load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 MODE = os.getenv("MODE")
 ADMIN_ID = int(os.getenv("ADMIN_ID"))
+
+data = {}
 
 active_games = {}
 user_game = {}
@@ -94,6 +97,18 @@ def get_proper_dictionary():
     with open(dictionary_path) as f:
         proper_dictionary = json.loads(f.read())
 
+def update_data(user_id, won, attempts):
+    global data
+    data[user_id]['Number of Games'] += 1
+    data[user_id]['No of Attempts'] += attempts
+    if won:
+        data[user_id]['Number of Wins'] += 1
+        data[user_id]['Number of Win Attempts'] += attempts
+    else:
+        data[user_id]['Number of Losses'] += 1
+        data[user_id]['Number of Loss Attempts'] += attempts
+    write_file(data)
+
 class User:
     def __init__(self, userObj, chatObj, gameid):
         self.userObj = userObj
@@ -113,6 +128,7 @@ class User:
     def endgame(self, update, context):
         update.message.reply_text(f'You ended the game with {self.attempts} attempts!', quote=True)
         update.message.reply_text(f'Word: {self.word}')
+        update_data(update.message.from_user.id, False, self.attempts)
         self.in_game = False
         self.attempts = 0
         self.word = ''
@@ -145,6 +161,21 @@ class User:
         else:
             update.message.reply_text('Invalid command. You\'re not in a game.')
 
+def check_user(userObj):
+    global data
+    if userObj.id not in data:
+        data[userObj.id] = {
+        'First Name' : userObj.first_name
+        'Full Name' : userObj.full_name
+        'ID' : userObj.id
+        'Username' : userObj.username
+        'Number of Games' : 0,
+        'Number of Wins' : 0,
+        'Number of Losses' : 0,
+        'No of Attempts' : 0,
+        'No of Win Attempts' : 0,
+        'No of Loss Attempts' : 0
+        }
 
 def reset(update, context):
     if(update.message.from_user.id == ADMIN_ID):
@@ -164,6 +195,7 @@ def start(update, context):
     update.message.reply_text("Welcome to Bulls and Cows. Use /help to get a list of available commands.")
 
 def newgame(update, context):
+    check_user(update.message.from_user)
     if(update.message.from_user.id not in user_game) or user_game[update.message.from_user.id].in_game==False:
         print(update.message.from_user.name + ' started a new game.')
         if(len(active_games) > 2):
@@ -201,7 +233,28 @@ def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
+def write_file(data):
+    lock = FileLock("data.json.lock")
+    with lock:
+        open("data.json", "w").write(json.dumps(data, indent=4))    
+    # with open('data.json', 'w') as f:
+    #     f.write(json.dumps(data, indent=4))
+
+def make_file():
+    with open('data.json', 'w') as f:
+        f.write('{}')
+
+def get_file():
+    with open('data.json', 'r') as f:
+        data = json.loads(f.read())
+    return data
+
 def main():
+    global data
+    if os.path.exists('data.json')==False:
+        make_file()
+    else:
+        data = get_file()
     get_dictionary()
     get_proper_dictionary()
     updater = Updater(BOT_TOKEN, use_context=True)
