@@ -253,11 +253,11 @@ def error(update, context):
     logger.warning('Update "%s" caused error "%s"', update, context.error)
 
 def write_file(data):
-    lock = FileLock("data.json.lock")
-    with lock:
-        open("data.json", "w").write(json.dumps(data, indent=4))    
-    # with open('data.json', 'w') as f:
-    #     f.write(json.dumps(data, indent=4))
+    # lock = FileLock("data.json.lock")
+    # with lock:
+    #     open("data.json", "w").write(json.dumps(data, indent=4))    
+    with open('data.json', 'w') as f:
+        f.write(json.dumps(data, indent=4))
 
 def make_file():
     with open('data.json', 'w') as f:
