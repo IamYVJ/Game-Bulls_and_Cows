@@ -228,10 +228,11 @@ def userstats_message(user_id):
     msg += 'Number of Games: ' + str(data[user_id]['Number of Games']) + '\n'
     msg += 'Number of Wins: ' + str(data[user_id]['Number of Wins']) + '\n'
     msg += 'Number of Losses: ' + str(data[user_id]['Number of Losses']) + '\n'
-    msg += 'Win Percentage: ' + str(round((data[user_id]['Number of Wins']/data[user_id]['Number of Games'])*100, 2)) + '\n'
+    msg += 'Win Percentage: ' + str(round((data[user_id]['Number of Wins']/data[user_id]['Number of Games'])*100, 2)) + '%\n\n'
     msg += 'Number of Attempts: ' + str(data[user_id]['Number of Attempts']) + '\n'
     msg += 'Number of Win Attempts: ' + str(data[user_id]['Number of Win Attempts']) + '\n'
     msg += 'Number of Loss Attempts: ' + str(data[user_id]['Number of Loss Attempts']) + '\n'
+    msg += 'Average Number of Attempts when Winning: ' + str(round((data[user_id]['Number of Win Attempts']/data[user_id]['Number of Wins']), 1)) + '\n'
     return msg
 
 def userstats(update, context):
