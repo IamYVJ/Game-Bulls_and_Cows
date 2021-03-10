@@ -232,12 +232,17 @@ def userstats_message(user_id):
     msg += 'Number of Attempts: ' + str(data[user_id]['Number of Attempts']) + '\n'
     msg += 'Number of Win Attempts: ' + str(data[user_id]['Number of Win Attempts']) + '\n'
     msg += 'Number of Loss Attempts: ' + str(data[user_id]['Number of Loss Attempts']) + '\n'
-    msg += 'Average Number of Attempts when Winning: ' + str(round((data[user_id]['Number of Win Attempts']/data[user_id]['Number of Wins']), 1)) + '\n'
+    msg += 'Average Number of Attempts Winning: ' 
+    if data[user_id]['Number of Wins']>0:
+        msg +=str(round((data[user_id]['Number of Win Attempts']/data[user_id]['Number of Wins']), 1)) + '\n'
+    else:
+        msg += '0.0\n'
     return msg
 
 def userstats(update, context):
-    if(update.message.from_user.id in data):
-        msg = userstats_message(update.message.from_user.id)
+    user_id = str(update.message.from_user.id)
+    if user_id in data:
+        msg = userstats_message(user_id)
         update.message.reply_text(msg, quote=True)
     else:
         update.message.reply_text('No Stats Available', quote=True)
