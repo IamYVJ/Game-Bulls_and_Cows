@@ -224,13 +224,13 @@ def gameinfo(update, context):
 
 def userstats_message(user_id):
     msg = ''
-    msg += 'Number of Games: ' + data[user_id]['Number of Games'] + '\n'
-    msg += 'Number of Wins: ' + data[user_id]['Number of Wins'] + '\n'
-    msg += 'Number of Losses: ' + data[user_id]['Number of Losses'] + '\n'
+    msg += 'Number of Games: ' + str(data[user_id]['Number of Games']) + '\n'
+    msg += 'Number of Wins: ' + str(data[user_id]['Number of Wins']) + '\n'
+    msg += 'Number of Losses: ' + str(data[user_id]['Number of Losses']) + '\n'
     msg += 'Win Percentage: ' + str(round((data[user_id]['Number of Wins']/data[user_id]['Number of Games'])*100, 2)) + '\n'
-    msg += 'No of Attempts: ' + data[user_id]['No of Attempts'] + '\n'
-    msg += 'No of Win Attempts: ' + data[user_id]['No of Win Attempts'] + '\n'
-    msg += 'No of Loss Attempts: ' + data[user_id]['No of Loss Attempts'] + '\n'
+    msg += 'No of Attempts: ' + str(data[user_id]['No of Attempts']) + '\n'
+    msg += 'No of Win Attempts: ' + str(data[user_id]['No of Win Attempts']) + '\n'
+    msg += 'No of Loss Attempts: ' + str(data[user_id]['No of Loss Attempts']) + '\n'
     return msg
 
 def userstats(update, context):
