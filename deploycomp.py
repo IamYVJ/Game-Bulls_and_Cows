@@ -187,7 +187,7 @@ def reset(update, context):
         update.message.reply_text('Unauthorized.')
 
 def about(update, context):
-    update.message.reply_text('Court Piece Bot made by Yashvardhan Jain.\nContact @IamYVJ for reporting bugs, feedback and suggestions.')
+    update.message.reply_text('Bulls and Cows Bot made by Yashvardhan Jain.\nContact @IamYVJ for reporting bugs, feedback and suggestions.')
 
 def helper(update, context):
     update.message.reply_text("Use /newgame to create a game.\nUse /join <gameid> to join a game.\nUse /gameinfo to get details of current game. \nUse /endgame to end current game\nUse /userstats to get your statistics\nUse /about to get info about bot.")
