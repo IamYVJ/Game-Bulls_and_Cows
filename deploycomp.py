@@ -38,7 +38,7 @@ elif (MODE == "deploy"):
     def run(updater):
         PORT = int(os.getenv("PORT", "8443"))
         updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=BOT_TOKEN)
-        updater.bot.set_webhook("https://court-piece-bot.herokuapp.com/" + BOT_TOKEN)
+        updater.bot.set_webhook("https://bullsncows.herokuapp.com/" + BOT_TOKEN)
         updater.idle()
 else:
     logger.error("No mode specified")
